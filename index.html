@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator QFE, RH, Tw & Titik Embun</title>
+  <style>
+    body {
+      font-family: 'Times New Roman', serif;
+      max-width: 550px;
+      margin: 0px auto;
+      padding: 30px;
+      border: 2px solid #a0a0a0;
+      border-radius: 15px;
+      background-color: #f7f7f7;
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      font-size: 20px;
+      margin-top: 0px;
+      margin-bottom: 15px;
+      color: #004d99;
+      font-weight: bold;
+    }
+    label {
+      font-size: 16px;
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+      color: #444;
+    }
+    select, input[type="number"] {
+      width: calc(100% - 20px);
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 10px;
+      font-size: 18px;
+      font-family: 'Times New Roman', serif;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+    button:hover { background-color: #0056b3; }
+    .output {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      background-color: #e9f7ea;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .error-message { color: #dc3545; text-align: center; font-weight: bold; }
+    .watermark { text-align: center; margin-top: 20px; font-size: 14px; color: #888; }
+  </style>
+</head>
+<body>
+  <h2>Kalkulator QFE, RH, Suhu Bola Basah & Titik Embun</h2>
+
+  <label for="qff">QFF (hPa/mbar):</label>
+  <input type="number" id="qff" placeholder="Contoh: 1012.8" step="0.1">
+
+  <label for="elevation">Ketinggian Stasiun (meter):</label>
+  <input type="number" id="elevation" placeholder="Contoh: 19" step="0.1">
+
+  <label for="temp">Suhu Bola Kering (°C):</label>
+  <input type="number" id="temp" placeholder="Contoh: 27.3" step="0.1">
+
+  <label for="mode">Pilih Mode Input:</label>
+  <select id="mode" onchange="toggleMode()">
+    <option value="rh">Input RH (%)</option>
+    <option value="tw">Input Suhu Bola Basah (Tw)</option>
+  </select>
+
+  <div id="rhInput">
+    <label for="rh"> RH (%):</label>
+    <input type="number" id="rh" placeholder="Contoh: 82" step="0.1">
+  </div>
+
+  <div id="twInput" style="display:none;">
+    <label for="tw">Suhu Bola Basah (°C):</label>
+    <input type="number" id="tw" placeholder="Contoh: 24.3" step="0.1">
+  </div>
+
+  <button onclick="hitung()">Hitung</button>
+
+  <div class="output" id="qfeResult"></div>
+  <div class="output" id="rhResult"></div>
+  <div class="output" id="twResult"></div>
+  <div class="output" id="dewPoint"></div>
+  <div class="error-message" id="errorMessage"></div>
+
+  <div class="watermark">by Andi</div>
+
+  <script>
+    function toggleMode() {
+      const mode = document.getElementById("mode").value;
+      document.getElementById("rhInput").style.display = (mode === "rh") ? "block" : "none";
+      document.getElementById("twInput").style.display = (mode === "tw") ? "block" : "none";
+      bindEnterTab(); // aktifkan event Enter/Tab sesuai mode
+    }
+
+    function hitung() {
+      const QFF = parseFloat(document.getElementById("qff").value);
+      const H = parseFloat(document.getElementById("elevation").value);
+      const T = parseFloat(document.getElementById("temp").value);
+      const mode = document.getElementById("mode").value;
+      const rhVal = parseFloat(document.getElementById("rh").value);
+      const twVal = parseFloat(document.getElementById("tw").value);
+
+      const errorMessageDiv = document.getElementById("errorMessage");
+      errorMessageDiv.innerText = "";
+
+      if (isNaN(QFF) || isNaN(H) || isNaN(T) || (mode === "rh" && isNaN(rhVal)) || (mode === "tw" && isNaN(twVal))) {
+        errorMessageDiv.innerText = "Mohon isi semua nilai dengan benar.";
+        return;
+      }
+
+      let RH, Tw;
+
+      // Tekanan jenuh
+      const es_T = 6.112 * Math.exp((17.67 * T) / (T + 243.5));
+
+      if (mode === "rh") {
+        RH = rhVal;
+        const e = (RH/100) * es_T;
+        // Hitung Tw (empiris)
+        Tw = T - (T - (243.5*(Math.log(e/6.112))/(17.67 - Math.log(e/6.112)))) * 0.74;
+      } else {
+        Tw = twVal;
+        const es_Tw = 6.112 * Math.exp((17.67 * Tw) / (Tw + 243.5));
+        const gamma = 0.00066 * (1 + 0.00115 * Tw);
+        const e = es_Tw - gamma * (T - Tw) * QFF;
+        RH = 100 * e / es_T;
+      }
+
+      // Hitung Titik Embun (Td)
+      const a = 17.27, b = 237.7;
+      const alpha = ((a * T) / (b + T)) + Math.log(RH/100);
+      const Td = (b * alpha) / (a - alpha);
+
+      // Hitung QFE
+      const g = 9.80665, R = 287.05;
+      const T_K = T + 273.15;
+      const e_val = (RH / 100) * es_T;
+      const r_val = (0.622 * e_val) / (QFF - e_val);
+      const T_v = T_K * (1 + 0.61 * r_val);
+      const exponent = (-g * H) / (R * T_v);
+      const QFE = QFF * Math.exp(exponent);
+
+      // Tampilkan hasil
+      document.getElementById("qfeResult").innerText = `QFE: ${QFE.toFixed(1)} mbar`;
+      document.getElementById("rhResult").innerText = `RH: ${Math.round(RH)} %`;
+      document.getElementById("twResult").innerText = `Suhu Bola Basah: ${Tw.toFixed(1)} °C`;
+      document.getElementById("dewPoint").innerText = `Titik Embun: ${Td.toFixed(1)} °C`;
+    }
+
+    function bindEnterTab() {
+      document.getElementById("rh").onkeydown = null;
+      document.getElementById("tw").onkeydown = null;
+
+      const mode = document.getElementById("mode").value;
+      const lastInput = (mode === "rh") ? document.getElementById("rh") : document.getElementById("tw");
+
+      if (lastInput) {
+        lastInput.addEventListener("keydown", function(e) {
+          if (e.key === "Enter" || e.key === "Tab") {
+            setTimeout(hitung, 100);
+          }
+        });
+      }
+    }
+
+    bindEnterTab(); // aktifkan default
+  </script>
+</body>
+</html>
