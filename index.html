@@ -1,189 +1,320 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kalkulator QFE, RH, Tw & Titik Embun</title>
-  <style>
-    body {
-      font-family: 'Times New Roman', serif;
-      max-width: 550px;
-      margin: 0px auto;
-      padding: 30px;
-      border: 2px solid #a0a0a0;
-      border-radius: 15px;
-      background-color: #f7f7f7;
-      color: #333;
-    }
-    h2 {
-      text-align: center;
-      font-size: 20px;
-      margin-top: 0px;
-      margin-bottom: 15px;
-      color: #004d99;
-      font-weight: bold;
-    }
-    label {
-      font-size: 16px;
-      display: block;
-      margin-top: 12px;
-      font-weight: bold;
-      color: #444;
-    }
-    select, input[type="number"] {
-      width: calc(100% - 20px);
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #bbb;
-      border-radius: 6px;
-      margin-top: 5px;
-    }
-    button {
-      margin-top: 15px;
-      width: 100%;
-      padding: 10px;
-      font-size: 18px;
-      font-family: 'Times New Roman', serif;
-      cursor: pointer;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-    }
-    button:hover { background-color: #0056b3; }
-    .output {
-      margin-top: 10px;
-      font-size: 18px;
-      font-weight: bold;
-      text-align: center;
-      background-color: #e9f7ea;
-      padding: 10px;
-      border-radius: 8px;
-    }
-    .error-message { color: #dc3545; text-align: center; font-weight: bold; }
-    .watermark { text-align: center; margin-top: 20px; font-size: 14px; color: #888; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator QFE, RH & Titik Embun STAMAR TENAU</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            max-width: 550px;
+            margin: 0px auto;
+            padding: 30px;
+            border: 2px solid #a0a0a0;
+            border-radius: 15px;
+            box-shadow: 0 0px 0px rgba(0,0,0,0.2);
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 20x;
+            margin-top: 0px;
+            margin-bottom: 15px;
+            color: #004d99;
+            font-weight: bold;
+        }
+
+        label {
+            font-size: 18px;
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #444;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            margin-top: 5px;
+            border: 1px solid #bbb;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        input[type="number"] {
+            width: calc(100% - 24px);
+            padding: 10px;
+            font-size: 18px;
+            margin-top: 0px;
+            border: 1px solid #bbb;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        
+        input[type="number"]:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+        }
+
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            font-size: 20px;
+            font-family: 'Times New Roman', serif;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+
+        .output {
+            margin-top: 0px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #006400;
+            text-align: center;
+            background-color: #e9f7ea;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        #qfeResult, #rhResult, #dewPointResult, #wetBulbResult {
+            color: #000000;
+            margin-top: 5px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 16px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .watermark {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
-  <h2>Kalkulator QFE, RH, Suhu Bola Basah & Titik Embun</h2>
+    <h2>Kalkulator QFE, RH & Titik Embun STAMAR TENAU</h2>
 
-  <label for="qff">QFF (hPa/mbar):</label>
-  <input type="number" id="qff" placeholder="Contoh: 1012.8" step="0.1">
+    <label for="qff">QFF (hPa/mbar):</label>
+    <input type="number" id="qff" placeholder="Contoh: 1012.8" step="0.1" required>
 
-  <label for="elevation">Ketinggian Stasiun (meter):</label>
-  <input type="number" id="elevation" placeholder="Contoh: 19" step="0.1">
+    <label for="elevation">Ketinggian Stasiun (meter):</label>
+    <input type="number" id="elevation" placeholder="Contoh: 19" step="0.1" required>
 
-  <label for="temp">Suhu Bola Kering (°C):</label>
-  <input type="number" id="temp" placeholder="Contoh: 27.3" step="0.1">
+    <label for="temp">Suhu Bola Kering (°C):</label>
+    <input type="number" id="temp" placeholder="Contoh: 27.3" step="0.1" required>
 
-  <label for="mode">Pilih Mode Input:</label>
-  <select id="mode" onchange="toggleMode()">
-    <option value="rh">Input RH (%)</option>
-    <option value="tw">Input Suhu Bola Basah (Tw)</option>
-  </select>
+    <label for="inputMode">Pilih Inputan:</label>
+    <select id="inputMode" onchange="toggleInput()">
+        <option value="rh">Kelembapan Relatif (RH)</option>
+        <option value="wetBulb">Suhu Bola Basah</option>
+    </select>
 
-  <div id="rhInput">
-    <label for="rh"> RH (%):</label>
-    <input type="number" id="rh" placeholder="Contoh: 82" step="0.1">
-  </div>
+    <div id="rhInputGroup">
+        <label for="rh">Kelembapan RH (%):</label>
+        <input type="number" id="rh" placeholder="Contoh: 81" required>
+    </div>
 
-  <div id="twInput" style="display:none;">
-    <label for="tw">Suhu Bola Basah (°C):</label>
-    <input type="number" id="tw" placeholder="Contoh: 24.3" step="0.1">
-  </div>
+    <div id="wetBulbInputGroup" style="display:none;">
+        <label for="wetBulbTemp">Suhu Bola Basah (°C):</label>
+        <input type="number" id="wetBulbTemp" placeholder="Contoh: 24.5" step="0.1" required>
+    </div>
 
-  <button onclick="hitung()">Hitung</button>
+    <button onclick="hitung()">Hitung</button>
 
-  <div class="output" id="qfeResult"></div>
-  <div class="output" id="rhResult"></div>
-  <div class="output" id="twResult"></div>
-  <div class="output" id="dewPoint"></div>
-  <div class="error-message" id="errorMessage"></div>
+    <div class="output" id="qfeResult"></div>
+    <div class="output" id="wetBulbResult"></div>
+    <div class="output" id="rhResult"></div>
+    <div class="output" id="dewPointResult"></div>
+    <div class="error-message" id="errorMessage"></div>
 
-  <div class="watermark">by Andi</div>
+    <div class="watermark">by Andi</div>
 
-  <script>
-    function toggleMode() {
-      const mode = document.getElementById("mode").value;
-      document.getElementById("rhInput").style.display = (mode === "rh") ? "block" : "none";
-      document.getElementById("twInput").style.display = (mode === "tw") ? "block" : "none";
-      bindEnterTab(); // aktifkan event Enter/Tab sesuai mode
-    }
+    <script>
+        function toggleInput() {
+            const inputMode = document.getElementById("inputMode").value;
+            const rhInputGroup = document.getElementById("rhInputGroup");
+            const wetBulbInputGroup = document.getElementById("wetBulbInputGroup");
+            
+            if (inputMode === "rh") {
+                rhInputGroup.style.display = "block";
+                wetBulbInputGroup.style.display = "none";
+                document.getElementById("rh").focus();
+            } else {
+                rhInputGroup.style.display = "none";
+                wetBulbInputGroup.style.display = "block";
+                document.getElementById("wetBulbTemp").focus();
+            }
+            resetOutputLabels();
+        }
 
-    function hitung() {
-      const QFF = parseFloat(document.getElementById("qff").value);
-      const H = parseFloat(document.getElementById("elevation").value);
-      const T = parseFloat(document.getElementById("temp").value);
-      const mode = document.getElementById("mode").value;
-      const rhVal = parseFloat(document.getElementById("rh").value);
-      const twVal = parseFloat(document.getElementById("tw").value);
+        function resetOutputLabels() {
+            document.getElementById("qfeResult").innerText = "";
+            document.getElementById("rhResult").innerText = "";
+            document.getElementById("dewPointResult").innerText = "";
+            document.getElementById("wetBulbResult").innerText = "";
+        }
 
-      const errorMessageDiv = document.getElementById("errorMessage");
-      errorMessageDiv.innerText = "";
+        function hitung() {
+            const QFF_val = document.getElementById("qff").value;
+            const H_val = document.getElementById("elevation").value;
+            const T_db_val = document.getElementById("temp").value;
+            const inputMode = document.getElementById("inputMode").value;
+            
+            const errorMessageDiv = document.getElementById("errorMessage");
+            errorMessageDiv.innerText = "";
+            resetOutputLabels();
 
-      if (isNaN(QFF) || isNaN(H) || isNaN(T) || (mode === "rh" && isNaN(rhVal)) || (mode === "tw" && isNaN(twVal))) {
-        errorMessageDiv.innerText = "Mohon isi semua nilai dengan benar.";
-        return;
-      }
+            const QFF = parseFloat(QFF_val);
+            const H = parseFloat(H_val);
+            const T_db = parseFloat(T_db_val);
 
-      let RH, Tw;
+            if (isNaN(QFF) || isNaN(H) || isNaN(T_db)) {
+                errorMessageDiv.innerText = "Mohon masukkan semua nilai numerik yang valid.";
+                return;
+            }
 
-      // Tekanan jenuh
-      const es_T = 6.112 * Math.exp((17.67 * T) / (T + 243.5));
+            let RH, Twb, Td;
 
-      if (mode === "rh") {
-        RH = rhVal;
-        const e = (RH/100) * es_T;
-        // Hitung Tw (empiris)
-        Tw = T - (T - (243.5*(Math.log(e/6.112))/(17.67 - Math.log(e/6.112)))) * 0.74;
-      } else {
-        Tw = twVal;
-        const es_Tw = 6.112 * Math.exp((17.67 * Tw) / (Tw + 243.5));
-        const gamma = 0.00066 * (1 + 0.00115 * Tw);
-        const e = es_Tw - gamma * (T - Tw) * QFF;
-        RH = 100 * e / es_T;
-      }
+            if (inputMode === "rh") {
+                const RH_val = document.getElementById("rh").value;
+                RH = parseFloat(RH_val);
+                if (isNaN(RH) || RH <= 0 || RH > 100) {
+                    errorMessageDiv.innerText = "Kelembaban Relatif (RH) harus antara 0.1% dan 100%.";
+                    return;
+                }
+                
+                const a_magnus = 17.27;
+                const b_magnus = 237.7;
+                const alpha = (a_magnus * T_db) / (b_magnus + T_db) + Math.log(RH / 100);
+                Td = (b_magnus * alpha) / (a_magnus - alpha);
 
-      // Hitung Titik Embun (Td)
-      const a = 17.27, b = 237.7;
-      const alpha = ((a * T) / (b + T)) + Math.log(RH/100);
-      const Td = (b * alpha) / (a - alpha);
+                Twb = T_db - 0.74 * (T_db - Td);
+                
+                document.getElementById("rhResult").innerText = `Kelembapan Relatif (RH): ${Math.round(RH)} %`;
+                document.getElementById("wetBulbResult").innerText = `Suhu Bola Basah: ${Twb.toFixed(1)} °C`;
 
-      // Hitung QFE
-      const g = 9.80665, R = 287.05;
-      const T_K = T + 273.15;
-      const e_val = (RH / 100) * es_T;
-      const r_val = (0.622 * e_val) / (QFF - e_val);
-      const T_v = T_K * (1 + 0.61 * r_val);
-      const exponent = (-g * H) / (R * T_v);
-      const QFE = QFF * Math.exp(exponent);
+            } else { // inputMode === "wetBulb"
+                const Twb_val = document.getElementById("wetBulbTemp").value;
+                Twb = parseFloat(Twb_val);
+                if (isNaN(Twb)) {
+                    errorMessageDiv.innerText = "Mohon masukkan nilai Suhu Bola Basah yang valid.";
+                    return;
+                }
+                if (Twb > T_db) {
+                    errorMessageDiv.innerText = "Suhu Bola Basah tidak boleh lebih tinggi dari Suhu Bola Kering.";
+                    return;
+                }
 
-      // Tampilkan hasil
-      document.getElementById("qfeResult").innerText = `QFE: ${QFE.toFixed(1)} mbar`;
-      document.getElementById("rhResult").innerText = `RH: ${Math.round(RH)} %`;
-      document.getElementById("twResult").innerText = `Suhu Bola Basah: ${Tw.toFixed(1)} °C`;
-      document.getElementById("dewPoint").innerText = `Titik Embun: ${Td.toFixed(1)} °C`;
-    }
+                const es_Tdb = 6.112 * Math.exp((17.67 * T_db) / (T_db + 243.5));
+                const es_Twb = 6.112 * Math.exp((17.67 * Twb) / (Twb + 243.5));
+                const P_est = (QFF - (H / 8.5));
+                const A = 0.000662 * (1 + 0.00115 * Twb);
+                const e = es_Twb - A * P_est * (T_db - Twb);
 
-    function bindEnterTab() {
-      document.getElementById("rh").onkeydown = null;
-      document.getElementById("tw").onkeydown = null;
+                RH = (e / es_Tdb) * 100;
+                
+                Td = (243.5 * Math.log(e / 6.112)) / (17.67 - Math.log(e / 6.112));
 
-      const mode = document.getElementById("mode").value;
-      const lastInput = (mode === "rh") ? document.getElementById("rh") : document.getElementById("tw");
+                document.getElementById("rhResult").innerText = `Kelembapan Relatif (RH): ${Math.round(RH)} %`;
+                document.getElementById("wetBulbResult").innerText = `Suhu Bola Basah: ${Twb.toFixed(1)} °C`;
+            }
+            
+            const g = 9.80665;
+            const R = 287.05;
+            const T_db_K = T_db + 273.15;
+            const es_val = 6.112 * Math.exp((17.67 * T_db) / (T_db + 243.5));
+            const e_val = (RH / 100) * es_val;
+            
+            if ((QFF - e_val) <= 0) {
+                 errorMessageDiv.innerText = "Tidak dapat menghitung rasio pencampuran yang valid untuk QFE.";
+                resetOutputLabels();
+                return;
+            }
+            const r_val = (0.622 * e_val) / (QFF - e_val);
+            const T_v_val = T_db_K * (1 + 0.61 * r_val);
+            const exponent = (-g * H) / (R * T_v_val);
+            const QFE = QFF * Math.exp(exponent);
 
-      if (lastInput) {
-        lastInput.addEventListener("keydown", function(e) {
-          if (e.key === "Enter" || e.key === "Tab") {
-            setTimeout(hitung, 100);
-          }
+            document.getElementById("qfeResult").innerText = `QFE: ${QFE.toFixed(1)} mbar`;
+            document.getElementById("dewPointResult").innerText = `Titik Embun: ${Td.toFixed(1)} °C`;
+        }
+        
+        // --- Memperbaiki Fungsionalitas Tab & Enter ---
+        document.addEventListener("keydown", function(e) {
+            const currentElement = e.target;
+            
+            // Definisikan urutan navigasi
+            const inputOrder = ["qff", "elevation", "temp", "inputMode", "rh", "wetBulbTemp", "hitungButton"];
+
+            // Tentukan elemen yang akan difokuskan berikutnya
+            const nextElement = (currentId) => {
+                const currentIndex = inputOrder.indexOf(currentId);
+                let nextId = inputOrder[currentIndex + 1];
+
+                // Jika elemen berikutnya adalah salah satu input yang disembunyikan,
+                // lewati ke input yang terlihat
+                if (nextId === "rh" && document.getElementById("rhInputGroup").style.display === "none") {
+                    nextId = "wetBulbTemp";
+                } else if (nextId === "wetBulbTemp" && document.getElementById("wetBulbInputGroup").style.display === "none") {
+                    nextId = "hitungButton";
+                }
+                
+                return document.getElementById(nextId) || document.querySelector("button");
+            };
+
+            // Tangani Tab dan Enter pada input dan dropdown
+            if (e.key === "Enter" || e.key === "Tab") {
+                // Jangan jalankan kode ini untuk tombol "Hitung"
+                if (currentElement.tagName === 'BUTTON') {
+                    return;
+                }
+
+                e.preventDefault(); // Mencegah perilaku default
+                
+                // Jalankan hitung() jika input valid
+                if (currentElement.value.trim() !== "" || currentElement.id === "inputMode") {
+                     hitung();
+                }
+
+                // Pindahkan fokus
+                const nextEl = nextElement(currentElement.id);
+                if (nextEl) {
+                    nextEl.focus();
+                }
+            }
         });
-      }
-    }
 
-    bindEnterTab(); // aktifkan default
-  </script>
+        document.querySelector('button').addEventListener('click', hitung);
+        document.getElementById("inputMode").addEventListener('change', toggleInput);
+        
+        window.onload = toggleInput;
+    </script>
 </body>
 </html>
